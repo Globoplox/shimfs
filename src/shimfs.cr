@@ -7,6 +7,7 @@ class Shimfs
   @is_owner : Bool
   @root : Void*
   @size : Int32
+  @closed = false
 
   getter resource_name
   getter is_owner
@@ -131,9 +132,20 @@ class Shimfs
   end
 
   def finalize
-    if @is_owner
+    close
+  end
+
+  def close
+    if @is_owner && !@closed
       Shimfs.check(LibCRTExt.sem_destroy(@semaphore), "sem_destroy")
+      Shimfs.check(LibCRTExt.shm_unlink(@resource_name), "shm_unlink")
+      Shimfs.check(LibC.munmap(@root, @size), "munmap")
     end
+    @closed = true
+  end
+
+  def closed?
+    @closed
   end
 
   def self.check(error : LibC::Int, name : String) : LibC::Int
