@@ -1,0 +1,12 @@
+name: shimfs
+version: 0.1.0
+
+authors:
+  - globoplox <globoplox@gmail.com>
+
+scripts:
+  postinstall: gcc -c imfs/imfs.c -o ./imfs.o
+
+crystal: '>= 1.15.1'
+
+license: MIT
